@@ -10,10 +10,10 @@ if __name__ == "__main__":
     print("Starting")
     # Первый этап. Чтение данных для тренировки нейросети и предсказания доходностей.
     print("Read for NN")
-    root_df = pd.read_csv('data/QQQ.csv')
+    root_df = pd.read_csv('data/GDX.csv')
     root_df = root_df.set_index('Unnamed: 0')
     print("Starting NN")
-    # train_model(root_df)  # Функция работы с нейросетью: тренировка, получение файлов.
+    train_model(root_df)  # Функция работы с нейросетью: тренировка, получение файлов.
     # Второй этап. Объединение полученных данных. Добавление предсказанных доходностей к лучшим компаниям.
     print('Read data to extend')
     extender = pd.read_csv("data/Returns_DF.csv")
@@ -27,9 +27,6 @@ if __name__ == "__main__":
     result_df = pd.DataFrame()  # Датафрэйм для записи.
     # Проход по каждому году для каждого метода.
     for year in to_model.Year.unique().tolist():
-        if year == 2017:
-            print("Temporary problems")
-            continue
         # Получение параметров для развесовки портфеля
         one_year_data = to_model.where(to_model.Year == year).dropna()
         one_year_data = one_year_data.drop(columns=["Year"])
@@ -39,7 +36,11 @@ if __name__ == "__main__":
         # Класс равесовки
         model = BlackLittermanCalc(assets=assets, benchmark_ticker="QQQ", returns=views, lookback=1,
                                    max_size=0.35, min_size=0.0, test_year=backtest_year)
-        model.calculate_weights()  # Расчёт весов
+        try:
+            model.calculate_weights()  # Расчёт весов
+        except:
+            print("Something went wrong")
+            continue
 
         res_list = []
         # Проход по методам развесовки для оценки доходности

@@ -397,7 +397,7 @@ class BlackLittermanCalc:
         print('******************************')
         self.__weights = weights_df
 
-    def portfolio_calculate(self, weights_type: str):
+    def portfolio_calculate(self, weights_type: str) -> list:
         ed = str(self.__test_year) + '-12-30'
         st = str(self.__test_year) + '-01-01'
         df = yf.download(self.__tickers, st, ed, progress=False)['Close'].dropna()
